@@ -12,8 +12,11 @@ function login_driver($email, $userpassword)
         $conn->close();
         return "ConnectionFailed";
     }
-    $password = check_input_password($userpassword, 16);
-    $mail = check_input_password($email,254);
+    $password = check_input_password($userpassword);
+    $mail = check_input_password($email);
+    
+    if($mail == "failed" || $password == "failed")
+        return "LoginFailed";
     $sql = "SELECT DRIVER_ID FROM DRIVER WHERE '" . $mail . "' = DRIVER_EMAIL AND '" . $password."' = DRIVER_PASSWORD";
     $result = $conn->query($sql);
     
@@ -41,15 +44,14 @@ function retrive_driver_data($id, $conn)
  
     return $result;
 }
-function check_input_password($var, $size){
+function check_input_password($var){
     $check = true;
-    if(strlen($var) < $size){
-        for($i = 0; $i < strlen($var); $i++){
-           if( $var[$i] == ';' || $var[$i] =="'"){
-               $check = false;
-           }
+    for($i = 0; $i < strlen($var); $i++){
+        if( $var[$i] == ';' || $var[$i] =="'" ||$var[i] == "="){
+             $check = false;
         }
     }
+    
     if($check){
         return $var;
     }   
